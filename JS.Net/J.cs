@@ -31,7 +31,7 @@ namespace JS.Net
         }
         public static Jsyntax set(string name, dynamic value)
         {
-            return syntax(string.Format("{0}={1}", name, value));
+            return syntax(string.Format("{0}={1}", name, JSerializer.GetJs(value)));
         }
         public static dynamic use
         {
@@ -44,7 +44,7 @@ namespace JS.Net
         }
         public static Jsyntax @typeof(object obj)
         {
-            return syntax(string.Format("typeof({0})", obj));
+            return syntax(string.Format("typeof({0})", JSerializer.GetJs(obj)));
         }
         public static dynamic undefined
         {
@@ -440,7 +440,7 @@ namespace JS.Net
             if ((object)_value != null)
             {
                 sb.Append("=");
-                sb.Append(_value);
+                sb.Append(JSerializer.GetJs(_value));
             }
             if ((object)_var != null)
             {
