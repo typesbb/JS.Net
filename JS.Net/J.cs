@@ -119,10 +119,8 @@ namespace JS.Net
             return jquery(string.Format(@".{0}", @class));
         }
         #endregion
-    }
 
-    public class JSerializer
-    {
+        #region Serializer
         public static string GetJs(object obj)
         {
             var serializer = new JsonSerializer();
@@ -135,7 +133,6 @@ namespace JS.Net
             }
             return stringWriter.ToString();
         }
-
         public class JConverter : JsonConverter
         {
             public override bool CanWrite { get { return true; } }
@@ -154,8 +151,8 @@ namespace JS.Net
             {
                 return existingValue;
             }
-
         }
+        #endregion
     }
 
     public abstract class Jexpression : DynamicObject
