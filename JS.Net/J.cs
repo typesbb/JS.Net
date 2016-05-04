@@ -31,7 +31,7 @@ namespace JS.Net
         }
         public static Jsyntax set(string name, dynamic value)
         {
-            return syntax(string.Format("{0}={1}", name, JSerializer.GetJs(value)));
+            return syntax(string.Format("{0}={1}", name, J.GetJs(value)));
         }
         public static dynamic use
         {
@@ -44,7 +44,7 @@ namespace JS.Net
         }
         public static Jsyntax @typeof(object obj)
         {
-            return syntax(string.Format("typeof({0})", JSerializer.GetJs(obj)));
+            return syntax(string.Format("typeof({0})", J.GetJs(obj)));
         }
         public static dynamic undefined
         {
@@ -93,7 +93,7 @@ namespace JS.Net
 
         public static Jsyntax alert(dynamic message)
         {
-            return syntax(string.Format("alert({0})", JSerializer.GetJs(message)));
+            return syntax(string.Format("alert({0})", J.GetJs(message)));
         }
         #endregion
 
@@ -196,21 +196,21 @@ namespace JS.Net
             var obj = Value;
             if (!string.IsNullOrEmpty(obj))
                 obj += ".";
-            result = GetInvokeMemberResult(string.Format("{0}{1}({2})", obj, binder.Name, string.Join(",", args.Select(JSerializer.GetJs))));
+            result = GetInvokeMemberResult(string.Format("{0}{1}({2})", obj, binder.Name, string.Join(",", args.Select(J.GetJs))));
             return true;
         }
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
             if (base.TryGetIndex(binder, indexes, out result)) return true;
-            result = new Jsyntax(string.Format("{0}[{1}]", Value, JSerializer.GetJs(indexes[0])));
+            result = new Jsyntax(string.Format("{0}[{1}]", Value, J.GetJs(indexes[0])));
             return true;
         }
 
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
             if (base.TryInvoke(binder, args, out result)) return true;
-            result = new Jsyntax(string.Format("{0}({1})", this, string.Join(",", args.Select(JSerializer.GetJs))));
+            result = new Jsyntax(string.Format("{0}({1})", this, string.Join(",", args.Select(J.GetJs))));
             return true;
         }
 
@@ -337,7 +337,7 @@ namespace JS.Net
     {
         public Jsyntax(object obj)
         {
-            Value = JSerializer.GetJs(obj);
+            Value = J.GetJs(obj);
         }
 
         public Jsyntax(string value)
@@ -350,7 +350,7 @@ namespace JS.Net
     {
         public JArray() : base("new Array()") { }
         public JArray(int count) : base(string.Format("new Array({0})", count)) { }
-        public JArray(params object[] args) : base(string.Format("new Array({0})", string.Join(",", args.Select(JSerializer.GetJs)))) { }
+        public JArray(params object[] args) : base(string.Format("new Array({0})", string.Join(",", args.Select(J.GetJs)))) { }
     }
 
     public class JObject : Jsyntax
@@ -370,7 +370,7 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic log(object message, params object[] args)
         {
-            return J.syntax(Value).log(message, JSerializer.GetJs(args));
+            return J.syntax(Value).log(message, J.GetJs(args));
         }
         /// <summary>
         /// 输出信息
@@ -380,7 +380,7 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic info(object message, params object[] args)
         {
-            return J.syntax(Value).info(message, JSerializer.GetJs(args));
+            return J.syntax(Value).info(message, J.GetJs(args));
         }
         /// <summary>
         /// 输出调试
@@ -390,7 +390,7 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic debug(object message, params object[] args)
         {
-            return J.syntax(Value).debug(message, JSerializer.GetJs(args));
+            return J.syntax(Value).debug(message, J.GetJs(args));
         }
         /// <summary>
         /// 输出警告
@@ -400,7 +400,7 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic warn(object message, params object[] args)
         {
-            return J.syntax(Value).warn(message, JSerializer.GetJs(args));
+            return J.syntax(Value).warn(message, J.GetJs(args));
         }
         /// <summary>
         /// 输出错误
@@ -410,7 +410,7 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic error(object message, params object[] args)
         {
-            return J.syntax(Value).error(message, JSerializer.GetJs(args));
+            return J.syntax(Value).error(message, J.GetJs(args));
         }
     }
 
@@ -437,7 +437,7 @@ namespace JS.Net
             if ((object)_value != null)
             {
                 sb.Append("=");
-                sb.Append(JSerializer.GetJs(_value));
+                sb.Append(J.GetJs(_value));
             }
             if ((object)_var != null)
             {
