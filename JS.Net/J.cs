@@ -530,7 +530,10 @@ namespace JS.Net
     {
         public Jfunction(params Jsyntax[] args)
         {
-            Value = string.Join(",", args.Select(arg => arg.ToString()));
+            if (args == null || args.Length == 0)
+                Value = null;
+            else
+                Value = string.Join(",", args.Select(arg => arg.ToString()));
         }
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
