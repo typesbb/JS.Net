@@ -528,9 +528,9 @@ namespace JS.Net
 
     public class Jfunction : Jbody
     {
-        public Jfunction(Jsyntax arg = null)
+        public Jfunction(params Jsyntax[] args)
         {
-            Value = arg;
+            Value = string.Join(",", args.Select(arg => arg.ToString()));
         }
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
