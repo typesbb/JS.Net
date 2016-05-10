@@ -37,7 +37,13 @@ namespace JS.Net
         {
             get { return syntax(null); }
         }
-
+        public static Jreturn @return(object value)
+        {
+            if (value is Jexpression)
+                return new Jreturn((Jexpression)value);
+            else
+                return new Jreturn(value.ToString());
+        }
         public static Jsyntax delete(Jsyntax name)
         {
             return syntax(string.Format("delete {0}", name));
@@ -241,14 +247,54 @@ namespace JS.Net
         #endregion
 
         #region Operator Overloaded
-        public static implicit operator string(Jexpression j)
+        public static implicit operator string(Jexpression value)
         {
-            if ((object)j == null) return string.Empty;
-            return j.ToString();
+            if ((object)value == null) return string.Empty;
+            return value.ToString();
         }
-        public static implicit operator Jexpression(string str)
+        public static implicit operator Jexpression(string value)
         {
-            return new Jsyntax(@"""" + str + @"""");
+            return new Jsyntax(@"""" + value + @"""");
+        }
+        public static implicit operator Jexpression(int value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(long value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(short value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(uint value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(ulong value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(ushort value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(float value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(double value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(decimal value)
+        {
+            return new Jsyntax(@"" + value + @"");
+        }
+        public static implicit operator Jexpression(bool value)
+        {
+            return new Jsyntax(@"" + value.ToString().ToLower() + @"");
         }
         public static Jsyntax operator ++(Jexpression j)
         {
@@ -280,7 +326,7 @@ namespace JS.Net
         }
         public static Jsyntax operator /(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}*{1}", j, j1));
+            return new Jsyntax(string.Format("{0}/{1}", j, j1));
         }
         public static Jsyntax operator %(Jexpression j, Jexpression j1)
         {
@@ -370,7 +416,10 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic log(object message, params object[] args)
         {
-            return J.syntax(Value).log(message, J.GetJs(args));
+            if (args == null || args.Length == 0)
+                return J.syntax(Value).log(message);
+            else
+                return J.syntax(Value).log(message, J.syntax(string.Join(",", args.Select(J.GetJs))));
         }
         /// <summary>
         /// 输出信息
@@ -380,7 +429,10 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic info(object message, params object[] args)
         {
-            return J.syntax(Value).info(message, J.GetJs(args));
+            if (args == null || args.Length == 0)
+                return J.syntax(Value).info(message);
+            else
+                return J.syntax(Value).info(message, J.syntax(string.Join(",", args.Select(J.GetJs))));
         }
         /// <summary>
         /// 输出调试
@@ -390,7 +442,10 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic debug(object message, params object[] args)
         {
-            return J.syntax(Value).debug(message, J.GetJs(args));
+            if (args == null || args.Length == 0)
+                return J.syntax(Value).debug(message);
+            else
+                return J.syntax(Value).debug(message, J.syntax(string.Join(",", args.Select(J.GetJs))));
         }
         /// <summary>
         /// 输出警告
@@ -400,7 +455,10 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic warn(object message, params object[] args)
         {
-            return J.syntax(Value).warn(message, J.GetJs(args));
+            if (args == null || args.Length == 0)
+                return J.syntax(Value).warn(message);
+            else
+                return J.syntax(Value).warn(message, J.syntax(string.Join(",", args.Select(J.GetJs))));
         }
         /// <summary>
         /// 输出错误
@@ -410,14 +468,17 @@ namespace JS.Net
         /// <returns></returns>
         public dynamic error(object message, params object[] args)
         {
-            return J.syntax(Value).error(message, J.GetJs(args));
+            if (args == null || args.Length == 0)
+                return J.syntax(Value).error(message);
+            else
+                return J.syntax(Value).error(message, J.syntax(string.Join(",", args.Select(J.GetJs))));
         }
     }
 
     public class Jvar : Jsyntax
     {
         private Jvar _var;
-        private dynamic _value;
+        private readonly dynamic _value;
         public Jvar(string name, dynamic value = null)
             : base(name)
         {
@@ -426,22 +487,23 @@ namespace JS.Net
 
         public Jvar var(string name, dynamic value = null)
         {
-            _var = new Jvar(name, value);
-            return this;
+            var var = new Jvar(name, value);
+            var._var = this;
+            return var;
         }
 
         private string Parse()
         {
             var sb = new StringBuilder();
+            if ((object)_var != null)
+            {
+                sb.Append(_var.Parse() + ",");
+            }
             sb.Append(Value);
             if ((object)_value != null)
             {
                 sb.Append("=");
                 sb.Append(J.GetJs(_value));
-            }
-            if ((object)_var != null)
-            {
-                sb.Append("," + _var.Parse());
             }
             return sb.ToString();
         }
@@ -456,12 +518,12 @@ namespace JS.Net
         public Jreturn(Jexpression value)
             : base(null)
         {
-            Value = J.syntax("return ") + value;
+            Value = J.syntax(string.Format("return {0}", value));
         }
         public Jreturn(string value)
             : base(null)
         {
-            Value = J.syntax("return ") + value;
+            Value = J.syntax(string.Format(@"return ""{0}""", value));
         }
     }
 
