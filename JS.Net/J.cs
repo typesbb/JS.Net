@@ -39,10 +39,7 @@ namespace JS.Net
         }
         public static Jreturn @return(object value)
         {
-            if (value is Jexpression)
-                return new Jreturn((Jexpression)value);
-            else
-                return new Jreturn(value.ToString());
+            return new Jreturn(value);
         }
         public static Jsyntax delete(Jsyntax name)
         {
@@ -515,15 +512,13 @@ namespace JS.Net
 
     public class Jreturn : Jsyntax
     {
-        public Jreturn(Jexpression value)
+        public Jreturn(object value)
             : base(null)
         {
-            Value = J.syntax(string.Format("return {0}", value));
-        }
-        public Jreturn(string value)
-            : base(null)
-        {
-            Value = J.syntax(string.Format(@"return ""{0}""", value));
+            if (value is string)
+                Value = J.syntax(string.Format(@"return ""{0}""", value));
+            else
+                Value = J.syntax(string.Format("return {0}", J.GetJs(value)));
         }
     }
 

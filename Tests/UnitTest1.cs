@@ -73,7 +73,9 @@ namespace Tests
             Assert.AreEqual(J.var(J.use.abcd).var(J.use.efg, J.use.node.Id).var(J.use.hi, new JArray()).var(J.use.jk), "var abcd,efg=node.Id,hi=new Array(),jk");
 
             Assert.AreEqual(J.@return("abcd"), @"return ""abcd""");
+            Assert.AreEqual(J.@return(new { id = "d60ccc72-23e2-e311-a9b3-2c59e5355b8f" }), @"return {id:""d60ccc72-23e2-e311-a9b3-2c59e5355b8f""}");
             Assert.AreEqual(J.@return(new Jfunction(J.use.e) { J.console.log("test%d", 2) }), @"return function(e){console.log(""test%d"",2);}");
+
         }
     }
 }
