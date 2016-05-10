@@ -1,2 +1,2 @@
 # JS.Net
-一个用C#来描述JS的库，用C#来写JS。
+A .net lib that you can writing javascript in c#.
