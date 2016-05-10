@@ -451,6 +451,20 @@ namespace JS.Net
         }
     }
 
+    public class Jreturn : Jsyntax
+    {
+        public Jreturn(Jexpression value)
+            : base(null)
+        {
+            Value = J.syntax("return ") + value;
+        }
+        public Jreturn(string value)
+            : base(null)
+        {
+            Value = J.syntax("return ") + value;
+        }
+    }
+
     public class Jquery : Jsyntax
     {
         public Jquery(string selector) : base(selector.StartsWith("$") || selector.StartsWith("JQuery") ? selector : string.Format(@"$(""{0}"")", selector)) { }
