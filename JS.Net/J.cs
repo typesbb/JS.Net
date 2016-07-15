@@ -101,25 +101,25 @@ namespace JS.Net
         #endregion
 
         #region jquery
-        public static readonly dynamic window = jquery(syntax("window"));
-        public static readonly dynamic document = jquery(syntax("document"));
-        public static readonly dynamic body = jquery(syntax("document.body"));
+        public static readonly dynamic window = new Jquery(syntax("window"));
+        public static readonly dynamic document = new Jquery(syntax("document"));
+        public static readonly dynamic body = new Jquery(syntax("document.body"));
 
-        public static dynamic jquery(string selector)
+        public static dynamic jquery
+        {
+            get { return new Jsyntax("$"); }
+        }
+        public static dynamic jquerySelect(string selector)
         {
             return new Jquery(selector);
         }
-        public static dynamic jquery(Jsyntax obj)
-        {
-            return new Jquery(obj);
-        }
         public static dynamic jqueryById(string id)
         {
-            return jquery(string.Format(@"#{0}", id));
+            return new Jquery(string.Format(@"#{0}", id));
         }
         public static dynamic jqueryByClass(string @class)
         {
-            return jquery(string.Format(@".{0}", @class));
+            return new Jquery(string.Format(@".{0}", @class));
         }
         #endregion
 
