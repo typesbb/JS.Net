@@ -679,4 +679,62 @@ namespace JS.Net
         }
     }
 
+    public class Jwhile : Jbody
+    {
+        public Jwhile(Jsyntax condition)
+        {
+            Value = condition;
+        }
+
+        public override string ToString()
+        {
+            return string.Format(@"while({0}){{{1}}}", Value, base.ToString());
+        }
+    }
+    public class Jdowhile : Jbody
+    {
+        public Jdowhile(Jsyntax condition)
+        {
+            Value = condition;
+        }
+
+        public override string ToString()
+        {
+            return string.Format(@"do{{{1}}}while({0})", Value, base.ToString());
+        }
+    }
+
+    public class Jswitch : Jbody
+    {
+        public Jswitch(Jsyntax syntax)
+        {
+            Value = syntax;
+        }
+
+        public override string ToString()
+        {
+            return string.Format(@"switch({0}){{{1}}}", Value, base.ToString());
+        }
+    }
+    public class Jcase : Jbody
+    {
+        public Jcase(object value)
+        {
+            Value = new Jsyntax(value);
+        }
+
+        public override string ToString()
+        {
+            return string.Format(@"case {0}:{1}", Value, base.ToString());
+        }
+    }
+    public class Jdefault : Jbody
+    {
+        public override string ToString()
+        {
+            return string.Format(@"default:{0}", base.ToString());
+        }
+    }
+
+
 }

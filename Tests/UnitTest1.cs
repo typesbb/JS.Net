@@ -76,6 +76,30 @@ namespace Tests
             Assert.AreEqual(J.@return(new { id = "d60ccc72-23e2-e311-a9b3-2c59e5355b8f" }), @"return {id:""d60ccc72-23e2-e311-a9b3-2c59e5355b8f""}");
             Assert.AreEqual(J.@return(new Jfunction(J.use.e) { J.console.log("test%d", 2) }), @"return function(e){console.log(""test%d"",2);}");
 
+            Assert.AreEqual(J.@return(
+                new Jswitch(J.use.e) { 
+                    new Jcase(1)
+                    {
+                        J.console.log("test%d", 1),
+                        J.@break
+                    },
+                    new Jcase(2)
+                    {
+                        J.console.log("test%d", 2),
+                        J.@break
+                    },
+                    new Jdefault()
+                    {
+                        J.console.log("test%d", 0),
+                    }
+                }), @"return switch(e){case 1:console.log(""test%d"",1);break;case 2:console.log(""test%d"",2);break;default:console.log(""test%d"",0);}");
+
+            Assert.AreEqual(J.@return(
+                new Jdowhile(J.use.e>0)
+                {
+                    J.console.log("test%d", 1),
+                }
+            ), @"return do{console.log(""test%d"",1);}while(e>0)");
         }
     }
 }
