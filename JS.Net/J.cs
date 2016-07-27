@@ -526,7 +526,7 @@ namespace JS.Net
     {
         public Jquery(string selector) : base(selector.StartsWith("$") || selector.StartsWith("JQuery") ? selector : string.Format(@"$(""{0}"")", selector)) { }
 
-        public Jquery(Jsyntax obj) : base(obj.ToString().StartsWith("$") || obj.ToString().StartsWith("JQuery") ? obj.ToString() : string.Format("$({0})", obj)) { }
+        public Jquery(Jsyntax obj) : base(obj.ToString().StartsWith("$") || obj.ToString().StartsWith("JQuery") ? obj.ToString() : obj) { }
 
         protected override Jsyntax GetInvokeMemberResult(string value)
         {
