@@ -101,17 +101,9 @@ namespace JS.Net
         #endregion
 
         #region jquery
-        public static readonly dynamic window = new Jquery(syntax("window"));
-        public static readonly dynamic document = new Jquery(syntax("document"));
-        public static readonly dynamic body = new Jquery(syntax("document.body"));
-
         public static dynamic jquery
         {
             get { return new Jsyntax("$"); }
-        }
-        public static dynamic jquerySelect(string selector)
-        {
-            return new Jquery(selector);
         }
         public static dynamic jqueryById(string id)
         {
@@ -374,6 +366,11 @@ namespace JS.Net
             return new Jsyntax(string.Format("{0}<<{1}", j, i));
         }
         #endregion
+
+        public Jsyntax Call(string name, dynamic value = null)
+        {
+            return new Jsyntax(string.Format("{0}.{1}{2}", this, name, value == null ? "" : string.Format("({0})", value)));
+        }
     }
 
     public class Jsyntax : Jexpression

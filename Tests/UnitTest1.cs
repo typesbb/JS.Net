@@ -57,6 +57,9 @@ namespace Tests
             Assert.AreEqual(J.syntax("abcd")[1], @"abcd[1]");
             Assert.AreEqual(J.syntax("abcd")(J.syntax("efg")), @"abcd(efg)");
             Assert.AreEqual(J.syntax("abcd")("efg"), @"abcd(""efg"")");
+
+            Assert.AreEqual(J.syntax("abcd").Call("efg"), @"abcd.efg");
+            Assert.AreEqual(J.syntax("abcd").Call("efg", 2), @"abcd.efg(2)");
         }
 
         [TestMethod]
@@ -71,6 +74,7 @@ namespace Tests
             Assert.AreEqual(J.var("abcd"), "var abcd");
             Assert.AreEqual(J.var(J.use.abcd, 3), "var abcd=3");
             Assert.AreEqual(J.var(J.use.abcd).var(J.use.efg, J.use.node.Id).var(J.use.hi, new JArray()).var(J.use.jk), "var abcd,efg=node.Id,hi=new Array(),jk");
+            Assert.AreEqual(J.var(J.use.abcd, J.or(J.use.a, J.use.b)), "var abcd=a||b");
 
             Assert.AreEqual(J.@return("abcd"), @"return ""abcd""");
             Assert.AreEqual(J.@return(new { id = "d60ccc72-23e2-e311-a9b3-2c59e5355b8f" }), @"return {id:""d60ccc72-23e2-e311-a9b3-2c59e5355b8f""}");
@@ -95,7 +99,7 @@ namespace Tests
                 }), @"return switch(e){case 1:console.log(""test%d"",1);break;case 2:console.log(""test%d"",2);break;default:console.log(""test%d"",0);}");
 
             Assert.AreEqual(J.@return(
-                new Jdowhile(J.use.e>0)
+                new Jdowhile(J.use.e > 0)
                 {
                     J.console.log("test%d", 1),
                 }
