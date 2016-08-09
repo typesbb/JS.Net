@@ -369,7 +369,7 @@ namespace JS.Net
 
         public Jsyntax Call(string name, dynamic value = null)
         {
-            return new Jsyntax(string.Format("{0}.{1}{2}", this, name, value == null ? "" : string.Format("({0})", value)));
+            return new Jsyntax(string.Format("{0}.{1}{2}", this, name, value == null ? "" : string.Format("({0})", J.GetJs(value))));
         }
     }
 
