@@ -19,6 +19,8 @@ namespace Tests
 
             var syntax = J.syntax("abcd");
             Assert.AreEqual(++syntax, @"++abcd");
+            var i = J.use.i;
+            Assert.AreEqual(++i, @"++i");
 
             syntax = J.syntax("abcd");
             Assert.AreEqual(--syntax, @"--abcd");
@@ -49,6 +51,8 @@ namespace Tests
             Assert.AreEqual(J.syntax("abcd") | J.syntax("efg"), @"abcd|efg");
             Assert.AreEqual(J.syntax("abcd") >> 2, @"abcd>>2");
             Assert.AreEqual(J.syntax("abcd") << 2, @"abcd<<2");
+
+            Assert.AreEqual((J.use.a & J.use.b) != J.use.c, @"(a&b)!=c");
 
             Assert.AreEqual(J.syntax("abcd").name, @"abcd.name");
             Assert.AreEqual(J.syntax("abcd").getName(), @"abcd.getName()");

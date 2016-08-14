@@ -37,7 +37,7 @@ namespace JS.Net
         {
             get { return syntax(null); }
         }
-        public static Jreturn @return(object value)
+        public static Jreturn @return(object value = null)
         {
             return new Jreturn(value);
         }
@@ -67,11 +67,11 @@ namespace JS.Net
 
         public static Jsyntax and(Jsyntax a, Jsyntax b)
         {
-            return syntax(string.Format("{0}&&{1}", a, b));
+            return new Jsyntax(string.Format("{0}&&{1}", a.ToString(true), b.ToString(true)), true);
         }
         public static Jsyntax or(Jsyntax a, Jsyntax b)
         {
-            return syntax(string.Format("{0}||{1}", a, b));
+            return new Jsyntax(string.Format("{0}||{1}", a.ToString(true), b.ToString(true)), true);
         }
         public static Jsyntax @break
         {
@@ -164,10 +164,17 @@ namespace JS.Net
             }
             set { _value = value; }
         }
-
+        internal bool IsOp { get; set; }
         public override string ToString()
         {
             return Value;
+        }
+        public string ToString(bool asOp)
+        {
+            if (IsOp)
+                return "(" + Value + ")";
+            else
+                return Value;
         }
 
         #region Dynamic
@@ -287,83 +294,83 @@ namespace JS.Net
         }
         public static Jsyntax operator ++(Jexpression j)
         {
-            return new Jsyntax(string.Format("++{0}", j));
+            return new Jsyntax(string.Format("++{0}", j), true);
         }
         public static Jsyntax operator --(Jexpression j)
         {
-            return new Jsyntax(string.Format("--{0}", j));
+            return new Jsyntax(string.Format("--{0}", j), true);
         }
         public static Jsyntax operator !(Jexpression j)
         {
-            return new Jsyntax(string.Format("!{0}", j));
+            return new Jsyntax(string.Format("!{0}", j.ToString(true)), true);
         }
         public static Jsyntax operator ~(Jexpression j)
         {
-            return new Jsyntax(string.Format("~{0}", j));
+            return new Jsyntax(string.Format("~{0}", j.ToString(true)), true);
         }
         public static Jsyntax operator +(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}+{1}", j, j1));
+            return new Jsyntax(string.Format("{0}+{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator -(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}-{1}", j, j1));
+            return new Jsyntax(string.Format("{0}-{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator *(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}*{1}", j, j1));
+            return new Jsyntax(string.Format("{0}*{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator /(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}/{1}", j, j1));
+            return new Jsyntax(string.Format("{0}/{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator %(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}%{1}", j, j1));
+            return new Jsyntax(string.Format("{0}%{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator ^(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}^{1}", j, j1));
+            return new Jsyntax(string.Format("{0}^{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator ==(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}=={1}", j, j1));
+            return new Jsyntax(string.Format("{0}=={1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator !=(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}!={1}", j, j1));
+            return new Jsyntax(string.Format("{0}!={1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator >(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}>{1}", j, j1));
+            return new Jsyntax(string.Format("{0}>{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator >=(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}>={1}", j, j1));
+            return new Jsyntax(string.Format("{0}>={1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator <(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}<{1}", j, j1));
+            return new Jsyntax(string.Format("{0}<{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator <=(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}<={1}", j, j1));
+            return new Jsyntax(string.Format("{0}<={1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator &(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}&{1}", j, j1));
+            return new Jsyntax(string.Format("{0}&{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator |(Jexpression j, Jexpression j1)
         {
-            return new Jsyntax(string.Format("{0}|{1}", j, j1));
+            return new Jsyntax(string.Format("{0}|{1}", j.ToString(true), j1.ToString(true)), true);
         }
         public static Jsyntax operator >>(Jexpression j, int i)
         {
-            return new Jsyntax(string.Format("{0}>>{1}", j, i));
+            return new Jsyntax(string.Format("{0}>>{1}", j.ToString(true), i), true);
         }
         public static Jsyntax operator <<(Jexpression j, int i)
         {
-            return new Jsyntax(string.Format("{0}<<{1}", j, i));
+            return new Jsyntax(string.Format("{0}<<{1}", j.ToString(true), i), true);
         }
         #endregion
 
@@ -380,9 +387,10 @@ namespace JS.Net
             Value = J.GetJs(obj);
         }
 
-        public Jsyntax(string value)
+        public Jsyntax(string value, bool isOp = false)
         {
             Value = value;
+            IsOp = isOp;
         }
     }
 
@@ -512,7 +520,9 @@ namespace JS.Net
         public Jreturn(object value)
             : base(null)
         {
-            if (value is string)
+            if (value == null)
+                Value = J.syntax(string.Format("return"));
+            else if (value is string)
                 Value = J.syntax(string.Format(@"return ""{0}""", value));
             else
                 Value = J.syntax(string.Format("return {0}", J.GetJs(value)));
