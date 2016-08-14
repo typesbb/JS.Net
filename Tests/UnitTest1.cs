@@ -52,7 +52,7 @@ namespace Tests
             Assert.AreEqual(J.syntax("abcd") >> 2, @"abcd>>2");
             Assert.AreEqual(J.syntax("abcd") << 2, @"abcd<<2");
 
-            Assert.AreEqual((J.use.a & J.use.b) != J.use.c, @"(a&b)!=c");
+            Assert.AreEqual(J.use(J.use.a & J.use.b) != J.use.c, @"(a&b)!=c");
 
             Assert.AreEqual(J.syntax("abcd").name, @"abcd.name");
             Assert.AreEqual(J.syntax("abcd").getName(), @"abcd.getName()");
