@@ -11,7 +11,6 @@ namespace Tests
         [TestMethod]
         public void JExpression()
         {
-            Assert.AreEqual(J.use.a = "a", @"a=""a""");
             Assert.AreEqual(J.syntax("abcd"), "abcd");
             Assert.AreEqual((Jsyntax)"abcd", @"""abcd""");
             Assert.AreEqual((Jsyntax)3, @"3");
@@ -21,11 +20,17 @@ namespace Tests
 
             var syntax = J.syntax("abcd");
             Assert.AreEqual(++syntax, @"++abcd");
-            Assert.AreEqual(++J.use.i, @"++i");
-            Assert.AreEqual(--J.use.i, @"--i");
+            var i = J.use.i;
+            Assert.AreEqual(++i, @"++i");
+
+            syntax = J.syntax("abcd");
+            Assert.AreEqual(--syntax, @"--abcd");
 
             Assert.AreEqual(!J.syntax("abcd"), @"!abcd");
             Assert.AreEqual(~J.syntax("abcd"), @"~abcd");
+
+            Assert.AreEqual(+J.syntax("abcd"), @"+abcd");
+            Assert.AreEqual(-J.syntax("abcd"), @"-abcd");
 
             Assert.AreEqual(J.syntax("abcd") + J.syntax("efg"), @"abcd+efg");
             Assert.AreEqual(J.syntax("abcd") - J.syntax("efg"), @"abcd-efg");
@@ -49,14 +54,6 @@ namespace Tests
             Assert.AreEqual(J.syntax("abcd") << 2, @"abcd<<2");
 
             Assert.AreEqual(J.use(J.use.a & J.use.b) != J.use.c, @"(a&b)!=c");
-            var id = Guid.NewGuid();
-            var str = J.set(J.use.str,
-                J.use.str + @"<input id='" + id.ToString() + "' type='checkbox' value='" + J.use.dataItem.Call("aa")[J.use.i] +
-                "' /><label for='" + id.ToString() + "'>" + J.use.dataItem.Call("aa")[J.use.i] + "</label>").ToString();
-            if ((string)str == "")
-            {
-
-            }
 
             Assert.AreEqual(J.syntax("abcd").name, @"abcd.name");
             Assert.AreEqual(J.syntax("abcd").getName(), @"abcd.getName()");
@@ -94,19 +91,19 @@ namespace Tests
                 new Jswitch(J.use.e) { 
                     new Jcase(1)
                     {
-                        J.console.log("test1%d", 1),
+                        J.console.log("test%d", 1),
                         J.@break
                     },
                     new Jcase(2)
                     {
-                        J.console.log("test2%d", 2),
+                        J.console.log("test%d", 2),
                         J.@break
                     },
                     new Jdefault()
                     {
-                        J.console.log("test3%d", 0),
+                        J.console.log("test%d", 0),
                     }
-                }), @"return switch(e){case 1:console.log(""test1%d"",1);break;case 2:console.log(""test2%d"",2);break;default:console.log(""test3%d"",0);}");
+                }), @"return switch(e){case 1:console.log(""test%d"",1);break;case 2:console.log(""test%d"",2);break;default:console.log(""test%d"",0);}");
 
             Assert.AreEqual(J.@return(
                 new Jdowhile(J.use.e > 0)
@@ -119,8 +116,6 @@ namespace Tests
             Assert.AreEqual(J.jquery("#bb"), @"$(""#bb"")");
             Assert.AreEqual(J.jqueryById("bb"), @"$(""#bb"")");
             Assert.AreEqual(J.jqueryByClass("bb"), @"$("".bb"")");
-            Assert.AreEqual(J.jquery("bb").bind("key", new Jfunction(J.use.e) { J.console.log("123") }), @"$(""bb"").bind(""key"",function(e){console.log(""123"");})");
-            Assert.AreEqual(J.jquery("bb").data("aa").bind("key", new Jfunction(J.use.e) { J.console.log("abc") }), @"$(""bb"").data(""aa"").bind(""key"",function(e){console.log(""abc"");})");
         }
 
         [TestMethod]
