@@ -88,6 +88,8 @@ namespace Tests
             Assert.AreEqual(J.@return(new { id = "d60ccc72-23e2-e311-a9b3-2c59e5355b8f" }), @"return {id:""d60ccc72-23e2-e311-a9b3-2c59e5355b8f""}");
             Assert.AreEqual(J.@return(new Jfunction(J.use.e) { J.console.log("test%d", 2) }), @"return function(e){console.log(""test%d"",2);}");
 
+            Assert.AreEqual(J.console.log("test%d", 1), @"console.log(""test%d"",1)");
+
             Assert.AreEqual(J.@return(
                 new Jswitch(J.use.e) { 
                     new Jcase(1)
@@ -117,7 +119,8 @@ namespace Tests
             Assert.AreEqual(J.jquery("#bb"), @"$(""#bb"")");
             Assert.AreEqual(J.jqueryById("bb"), @"$(""#bb"")");
             Assert.AreEqual(J.jqueryByClass("bb"), @"$("".bb"")");
-            Assert.AreEqual(J.jquery("bb").data("aa").bind("key", new Jfunction(J.use.e) { }), @"$(""bb"").bind(""key"",function(e){})");
+            Assert.AreEqual(J.jquery("bb").bind("key", new Jfunction(J.use.e) { J.console.log("123") }), @"$(""bb"").bind(""key"",function(e){console.log(""123"");})");
+            Assert.AreEqual(J.jquery("bb").data("aa").bind("key", new Jfunction(J.use.e) { J.console.log("abc") }), @"$(""bb"").data(""aa"").bind(""key"",function(e){console.log(""abc"");})");
         }
 
         [TestMethod]
