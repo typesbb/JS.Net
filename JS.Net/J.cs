@@ -522,6 +522,14 @@ namespace JS.Net
             return new Jquery(value);
         }
 
+        public override object InvokeMember(string name, object[] args)
+        {
+            if (name == "bind")
+            {
+                bind(args[0].ToString(), (JEvent)args[1]);
+            }
+            return null;
+        }
         public string bind(string eventName, JEvent func)
         {
             dynamic obj = this;

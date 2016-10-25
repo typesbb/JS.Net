@@ -117,6 +117,7 @@ namespace Tests
             Assert.AreEqual(J.jquery("#bb"), @"$(""#bb"")");
             Assert.AreEqual(J.jqueryById("bb"), @"$(""#bb"")");
             Assert.AreEqual(J.jqueryByClass("bb"), @"$("".bb"")");
+            Assert.AreEqual(J.jquery("bb").bind("key",new Jfunction(J.use.e){}), @"$(""bb"").bind(""key"",function(e){})");
         }
 
         [TestMethod]
