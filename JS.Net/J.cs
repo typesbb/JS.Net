@@ -517,25 +517,25 @@ namespace JS.Net
 
         public Jquery(Jsyntax obj) : base(obj.ToString().StartsWith("$") || obj.ToString().StartsWith("JQuery") ? obj.ToString() : obj) { }
 
-        protected override Jsyntax GetInvokeMemberResult(string value)
-        {
-            return new Jquery(value);
-        }
+        //protected override Jsyntax GetInvokeMemberResult(string value)
+        //{
+        //    return new Jquery(value);
+        //}
 
-        public string bind(string eventName, JEvent func)
-        {
-            dynamic obj = this;
-            Jfunction f;
-            if (J.use.e.Method.ReturnType == typeof(Jfunction))
-            {
-                f = func(J.use.e);
-            }
-            else
-            {
-                f = new Jfunction(J.use.e) { func(J.use.e) };
-            }
-            return obj.bind(eventName, f);
-        }
+        //public string bind(string eventName, JEvent func)
+        //{
+        //    dynamic obj = this;
+        //    Jfunction f;
+        //    if (J.use.e.Method.ReturnType == typeof(Jfunction))
+        //    {
+        //        f = func(J.use.e);
+        //    }
+        //    else
+        //    {
+        //        f = new Jfunction(J.use.e) { func(J.use.e) };
+        //    }
+        //    return obj.bind(eventName, f);
+        //}
     }
 
     public class Jbody : Jexpression, IEnumerable<Jexpression>
