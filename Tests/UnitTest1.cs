@@ -20,6 +20,7 @@ namespace Tests
             Assert.AreEqual((Jsyntax)"abcd", @"""abcd""");
             Assert.AreEqual((Jsyntax)3, @"3");
             Assert.AreEqual((Jsyntax)false, @"false");
+            Assert.AreEqual(J.use.deviceLinkages["a"] = new Jfunction(J.use.ct) { }, @"deviceLinkages[""a""]=function(ct){}");
 
             Assert.AreEqual(J.syntax(new { name = "abcd", age = 20 }), @"{name:""abcd"",age:20}");
 

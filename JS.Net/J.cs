@@ -222,6 +222,13 @@ namespace JS.Net
                 var parameters = new Expression[] { Expression.NewArrayInit(typeof(object), indexes.Select(index => Expression.Convert(index.Expression, typeof(object)))) };
                 return BindDynamicMetaObject(methodName, parameters);
             }
+
+            public override DynamicMetaObject BindSetIndex(SetIndexBinder binder, DynamicMetaObject[] indexes, DynamicMetaObject value)
+            {
+                const string methodName = "SetIndex";
+                var parameters = new Expression[] { Expression.NewArrayInit(typeof(object), indexes.Select(index => Expression.Convert(index.Expression, typeof(object)))), Expression.Convert(value.Expression, typeof(object)) };
+                return BindDynamicMetaObject(methodName, parameters);
+            }
         }
 
         #region Dynamic
@@ -234,7 +241,6 @@ namespace JS.Net
             _getObj = new Jsyntax(string.Format("{0}{1}", obj, name));
             return _getObj;
         }
-
         public virtual object SetMember(string name, object value)
         {
             var syn = value as Jexpression;
@@ -261,13 +267,8 @@ namespace JS.Net
             var obj = Value;
             if (!string.IsNullOrEmpty(obj))
                 obj += ".";
-            return GetInvokeMemberResult(string.Format("{0}{1}({2})", obj, name, string.Join(",", args.Select(J.GetJs))));
+            return new Jsyntax(string.Format("{0}{1}({2})", obj, name, string.Join(",", args.Select(J.GetJs))));
         }
-        protected virtual Jsyntax GetInvokeMemberResult(string str)
-        {
-            return new Jsyntax(str);
-        }
-
         public virtual object Invoke(object[] args)
         {
             return new Jsyntax(string.Format("{0}({1})", this, string.Join(",", args.Select(J.GetJs))));
@@ -275,6 +276,10 @@ namespace JS.Net
         public virtual object GetIndex(object[] indexes)
         {
             return new Jsyntax(string.Format("{0}[{1}]", Value, J.GetJs(indexes[0])));
+        }
+        public virtual object SetIndex(object[] indexes, object value)
+        {
+            return new Jsyntax(string.Format("{0}[{1}]={2}", Value, J.GetJs(indexes[0]), J.GetJs(value)));
         }
         public Jsyntax Call(string name)
         {
