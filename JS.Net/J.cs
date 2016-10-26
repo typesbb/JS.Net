@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace JS.Net
 {
     /// <summary>
-    /// 用于创建js的静态类，无法使用&&和||，使用and和or方法代替，递增（++）和递减（--）只能表示成前缀形式
+    /// 用于创建js的静态类，无法使用&&和||，使用and和or方法代替
     /// </summary>
     public static class J
     {
@@ -150,7 +150,7 @@ namespace JS.Net
         #endregion
     }
 
-    public abstract class Jexpression : DynamicObject
+    public abstract class Jexpression : IDynamicMetaObjectProvider
     {
         private string _value;
 
@@ -169,64 +169,135 @@ namespace JS.Net
             return Value;
         }
 
-        #region Dynamic
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        public DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            if (base.TryGetMember(binder, out result)) return true;
+            return new MyDynamicMetaObject(parameter, this);
+        }
+        private class MyDynamicMetaObject : DynamicMetaObject
+        {
+            internal MyDynamicMetaObject(Expression expression, Jexpression value) : base(expression, BindingRestrictions.Empty, value) { }
+
+            private DynamicMetaObject BindDynamicMetaObject(string methodName, Expression[] parameters)
+            {
+                var getEntry = new DynamicMetaObject(
+                    Expression.Call(
+                        Expression.Convert(Expression, LimitType),
+                        typeof(Jexpression).GetMethod(methodName),
+                        parameters),
+                    BindingRestrictions.GetTypeRestriction(Expression, LimitType));
+                return getEntry;
+            }
+            public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
+            {
+                const string methodName = "GetMember";
+                var parameters = new Expression[] { Expression.Constant(binder.Name) };
+                return BindDynamicMetaObject(methodName, parameters);
+            }
+
+            public override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value)
+            {
+                const string methodName = "SetMember";
+                var parameters = new Expression[] { Expression.Constant(binder.Name), Expression.Convert(value.Expression, typeof(object)) };
+                return BindDynamicMetaObject(methodName, parameters);
+            }
+
+            public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
+            {
+                const string methodName = "InvokeMember";
+                var parameters = new Expression[] { Expression.Constant(binder.Name), Expression.NewArrayInit(typeof(object), args.Select(arg => Expression.Convert(arg.Expression, typeof(object)))) };
+                return BindDynamicMetaObject(methodName, parameters);
+            }
+
+            public override DynamicMetaObject BindInvoke(InvokeBinder binder, DynamicMetaObject[] args)
+            {
+                const string methodName = "Invoke";
+                var parameters = new Expression[] { Expression.NewArrayInit(typeof(object), args.Select(arg => Expression.Convert(arg.Expression, typeof(object)))) };
+                return BindDynamicMetaObject(methodName, parameters);
+            }
+
+            public override DynamicMetaObject BindGetIndex(GetIndexBinder binder, DynamicMetaObject[] indexes)
+            {
+                const string methodName = "GetIndex";
+                var parameters = new Expression[] { Expression.NewArrayInit(typeof(object), indexes.Select(index => Expression.Convert(index.Expression, typeof(object)))) };
+                return BindDynamicMetaObject(methodName, parameters);
+            }
+        }
+
+        #region Dynamic
+        private Jexpression _getObj;
+        public virtual object GetMember(string name)
+        {
             var obj = Value;
             if (!string.IsNullOrEmpty(obj))
                 obj += ".";
-            result = new Jsyntax(string.Format("{0}{1}", obj, binder.Name));
-            return true;
+            _getObj = new Jsyntax(string.Format("{0}{1}", obj, name));
+            return _getObj;
         }
 
+        public virtual object SetMember(string name, object value)
+        {
+            var syn = value as Jexpression;
+            if ((object)syn != null && (syn.Value.StartsWith("++") || syn.Value.StartsWith("--")))
+            {
+                if ((object)_getObj != null && _getObj.Value == name)
+                {
+                    _getObj.Value = name + syn.Value.Replace(name, "");
+                    return value;
+                }
+                if (syn._incDec == name)
+                {
+                    return value;
+                }
+            }
+
+            var obj = Value;
+            if (!string.IsNullOrEmpty(obj))
+                obj += ".";
+            return new Jsyntax(string.Format("{0}{1}={2}", obj, name, J.GetJs(value)));
+        }
+        public virtual object InvokeMember(string name, object[] args)
+        {
+            if (name == "Call")
+            {
+                if (args.Length > 1)
+                {
+                    var parameters = new object[args.Length - 1];
+                    Array.Copy(args, 1, parameters, 0, args.Length - 1);
+                    return Call(args[0].ToString(), parameters);
+                }
+                else
+                {
+                    return Call(args[0].ToString());
+                }
+            }
+            var obj = Value;
+            if (!string.IsNullOrEmpty(obj))
+                obj += ".";
+            return GetInvokeMemberResult(string.Format("{0}{1}({2})", obj, name, string.Join(",", args.Select(J.GetJs))));
+        }
         protected virtual Jsyntax GetInvokeMemberResult(string str)
         {
             return new Jsyntax(str);
-                }
-        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
-                {
-            if (base.TryInvokeMember(binder, args, out result)) return true;
-            var obj = Value;
-            if (!string.IsNullOrEmpty(obj))
-                obj += ".";
-            result = GetInvokeMemberResult(string.Format("{0}{1}({2})", obj, binder.Name, string.Join(",", args.Select(J.GetJs))));
-            return true;
         }
 
-        public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
+        public virtual object Invoke(object[] args)
         {
-            if (base.TryGetIndex(binder, indexes, out result)) return true;
-            result = new Jsyntax(string.Format("{0}[{1}]", Value, J.GetJs(indexes[0])));
-            return true;
+            return new Jsyntax(string.Format("{0}({1})", this, string.Join(",", args.Select(J.GetJs))));
         }
-
-        public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
+        public virtual object GetIndex(object[] indexes)
         {
-            if (base.TryInvoke(binder, args, out result)) return true;
-            result = new Jsyntax(string.Format("{0}({1})", this, string.Join(",", args.Select(J.GetJs))));
-            return true;
+            return new Jsyntax(string.Format("{0}[{1}]", Value, J.GetJs(indexes[0])));
         }
-
-        public override bool TryUnaryOperation(UnaryOperationBinder binder, out object result)
+        public Jsyntax Call(string name, object value = null)
         {
-            if (base.TryUnaryOperation(binder, out result)) return true;
-            string op;
-            switch (binder.Operation)
-            {
-                case ExpressionType.UnaryPlus:
-                    op = "+{0}";
-                    break;
-                case ExpressionType.Negate:
-                    op = "-{0}";
-                    break;
-                default:
-                    return false;
+            var str = "";
+            var args = value as IEnumerable<object>;
+            if (args != null)
+                str = string.Format("({0})", string.Join(",", args.Select(J.GetJs)));
+            else if (value != null)
+                str = string.Format("({0})", J.GetJs(value));
+            return new Jsyntax(string.Format("{0}.{1}{2}", this, name, str));
         }
-            result = new Jsyntax(string.Format(op, this));
-            return true;
-        }
-
         #endregion
 
         #region Operator Overloaded
@@ -279,13 +350,18 @@ namespace JS.Net
         {
             return new Jsyntax(@"" + value.ToString().ToLower() + @"");
         }
+        private string _incDec;
         public static Jsyntax operator ++(Jexpression j)
         {
-            return new Jsyntax(string.Format("++{0}", j));
+            var syn = new Jsyntax(string.Format("++{0}", j));
+            syn._incDec = j;
+            return syn;
         }
         public static Jsyntax operator --(Jexpression j)
         {
-            return new Jsyntax(string.Format("--{0}", j));
+            var syn = new Jsyntax(string.Format("--{0}", j));
+            syn._incDec = j;
+            return syn;
         }
         public static Jsyntax operator !(Jexpression j)
         {
@@ -360,11 +436,6 @@ namespace JS.Net
             return new Jsyntax(string.Format("{0}<<{1}", j, i));
         }
         #endregion
-
-        public Jsyntax Call(string name, dynamic value = null)
-        {
-            return new Jsyntax(string.Format("{0}.{1}{2}", this, name, value == null ? "" : string.Format("({0})", J.GetJs(value))));
-        }
     }
 
     public class Jsyntax : Jexpression
@@ -473,6 +544,18 @@ namespace JS.Net
             _value = value;
         }
 
+        public override object InvokeMember(string name, object[] args)
+        {
+            if (name == "var")
+            {
+                if (args.Length > 1)
+                    return var(args[0].ToString(), args[1]);
+                else
+                    return var(args[0].ToString());
+            }
+            return base.InvokeMember(name, args);
+        }
+
         public Jvar var(string name, dynamic value = null)
         {
             var var = new Jvar(name, value);
@@ -520,36 +603,10 @@ namespace JS.Net
         public Jquery(string selector) : base(selector.StartsWith("$") || selector.StartsWith("JQuery") ? selector : string.Format(@"$(""{0}"")", selector)) { }
 
         public Jquery(Jsyntax obj) : base(obj.ToString().StartsWith("$") || obj.ToString().StartsWith("JQuery") ? obj.ToString() : obj) { }
-
-        protected override Jsyntax GetInvokeMemberResult(string value)
-        {
-            return new Jquery(value);
-        }
-
-        public string bind(string eventName, JEvent func)
-        {
-            dynamic obj = this;
-            return obj.bind(eventName, new Jfunction(J.use.e)
-            {
-                func(J.use.e)
-            });
-        }
     }
 
     public class Jbody : Jexpression, IEnumerable<Jexpression>
     {
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            result = null;
-            return false;
-        }
-
-        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
-        {
-            result = null;
-            return false;
-        }
-
         private readonly List<Jexpression> _items = new List<Jexpression>();
         IEnumerator<Jexpression> IEnumerable<Jexpression>.GetEnumerator()
         {
@@ -560,6 +617,20 @@ namespace JS.Net
         {
             return _items.GetEnumerator();
         }
+        public override object InvokeMember(string name, object[] args)
+        {
+            if (name == "Add")
+            {
+                Add((Jexpression)args[0]);
+            }
+            return null;
+        }
+
+        public override object GetMember(string name)
+        {
+            return null;
+        }
+
         public void Add(Jexpression item)
         {
             _items.Add(item);
@@ -588,8 +659,6 @@ namespace JS.Net
         }
     }
 
-    public delegate Jbody JEvent(dynamic e);
-
     public class Jfunction : Jbody
     {
         public Jfunction(params Jsyntax[] args)
@@ -600,10 +669,9 @@ namespace JS.Net
                 Value = string.Join(",", args.Select(arg => arg.ToString()));
         }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        public override object GetMember(string name)
         {
-            result = new Jsyntax(string.Format("{0}", binder.Name));
-            return true;
+            return new Jsyntax(string.Format("{0}", name));
         }
         public override string ToString()
         {
