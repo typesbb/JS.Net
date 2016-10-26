@@ -56,9 +56,9 @@ namespace Tests
 
             Assert.AreEqual(J.use(J.use.a & J.use.b) != J.use.c, @"(a&b)!=c");
             var id = Guid.NewGuid();
-            var str = J.set(J.use.str,
+            var str = J.use.str=
                 J.use.str + @"<input id='" + id.ToString() + "' type='checkbox' value='" + J.use.dataItem.Call("aa")[J.use.i] +
-                "' /><label for='" + id.ToString() + "'>" + J.use.dataItem.Call("aa")[J.use.i] + "</label>").ToString();
+                "' /><label for='" + id.ToString() + "'>" + J.use.dataItem.Call("aa")[J.use.i] + "</label>";
             if ((string)str == "")
             {
 
@@ -87,7 +87,7 @@ namespace Tests
 
             Assert.AreEqual(J.var.i, "var i");
             Assert.AreEqual(J.var.i = 3, "var i=3");
-            Assert.AreEqual(new Jbody { (J.var.i = 1), J.var.j, (J.var.k = new JArray()) }.ToString(), "var i=1,j,k=new Array();");
+            Assert.AreEqual(new Jbody { J.debugger, (J.var.i = 1), (J.var.j = false), (J.var.k = new JArray()) }.ToString(), "debugger;var i=1,j=false,k=new Array();");
             Assert.AreEqual(J.var.abcd = J.or(J.use.a, J.use.b), "var abcd=a||b");
 
             Assert.AreEqual(J.@return("abcd"), @"return ""abcd""");
@@ -184,8 +184,8 @@ namespace Tests
                      },
                      new Jelse
                      {
-                        J.set(J.use.sourceNode,J.use.selectNode),
-                        J.set(J.use.IsCut,true),
+                        (J.use.sourceNode=J.use.selectNode),
+                        (J.use.IsCut=true),
                      },
                 },
                  new Jelse_if(J.use.e.item.textContent=="复制")
@@ -198,8 +198,8 @@ namespace Tests
                      },
                      new Jelse
                      {
-                        J.set(J.use.sourceNode,J.use.selectNode),
-                        J.set(J.use.IsCut,false),
+                        (J.use.sourceNode=J.use.selectNode),
+                        (J.use.IsCut=false),
                      },
                 },
                  new Jelse_if(J.use.e.item.textContent=="粘贴")
@@ -211,7 +211,7 @@ namespace Tests
                      J.use._deviceTree.DataSource.remote.Paste(new {SourceID=J.use.sourceNode.ID,SourceNodeType=J.use.sourceNode.NodeType,J.use.selectNode.ID,J.use.IsCut,J.use.selectNode.NodeType}).then(new Jfunction(J.use.e){
                         new Jif(J.use.e.Success)
                         {
-                             J.set(J.use.sourceNode,J.undefined),
+                           (J.use.sourceNode=J.undefined),
                            //J.var(J.use.tree,TreeView.GetJQuery(_deviceTree.Id)),
                            //J.use.tree.append(J.use.sourceNode,J.use.selectNode),
                            

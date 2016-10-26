@@ -28,10 +28,6 @@ namespace JS.Net
         {
             get { return new Jvar(); }
         }
-        public static Jsyntax set(string name, dynamic value)
-        {
-            return syntax(string.Format("{0}={1}", name, J.GetJs(value)));
-        }
         public static dynamic use
         {
             get { return syntax(null); }
@@ -542,7 +538,7 @@ namespace JS.Net
 
         public override object SetMember(string name, object value)
         {
-            return new Jvar(string.Format("{0}={1}", name, value));
+            return new Jvar(string.Format("{0}={1}", name, J.GetJs(value)));
         }
 
         public override string ToString()
@@ -626,7 +622,7 @@ namespace JS.Net
                 {
                     if (i > 0 && _items[i - 1] is Jvar && _items[i] is Jvar)
                         str = _items[i].Value;
-                    if (i + 1 < _items.Count && _items[i + 1] is Jvar)
+                    if (_items[i] is Jvar && i + 1 < _items.Count && _items[i + 1] is Jvar)
                         str += ",";
                     else
                         str += ";";
