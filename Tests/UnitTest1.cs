@@ -11,6 +11,10 @@ namespace Tests
         [TestMethod]
         public void JExpression()
         {
+            var a = J.syntax("a");
+            Assert.AreEqual(a.Equals(a), ((object)a).Equals((object)a));
+            Assert.AreEqual(J.use.a.GetType(), ((object)J.use.a).GetType());
+            Assert.AreEqual(J.use.a.Call("b",1), @"a.b(1)");
             Assert.AreEqual(J.use.a = "a", @"a=""a""");
             Assert.AreEqual(J.syntax("abcd"), "abcd");
             Assert.AreEqual((Jsyntax)"abcd", @"""abcd""");
@@ -81,10 +85,10 @@ namespace Tests
             Assert.AreEqual(new JArray(5, 6, 9), "new Array(5,6,9)");
             Assert.AreEqual(new JArray("a", "b", 9), @"new Array(""a"",""b"",9)");
 
-            Assert.AreEqual(J.var("abcd"), "var abcd");
-            Assert.AreEqual(J.var(J.use.abcd, 3), "var abcd=3");
-            Assert.AreEqual(J.var(J.use.abcd).var(J.use.efg, J.use.node.Id).var(J.use.hi, new JArray()).var(J.use.jk), "var abcd,efg=node.Id,hi=new Array(),jk");
-            Assert.AreEqual(J.var(J.use.abcd, J.or(J.use.a, J.use.b)), "var abcd=a||b");
+            Assert.AreEqual(J.var.i, "var i");
+            Assert.AreEqual(J.var.i = 3, "var i=3");
+            Assert.AreEqual(new Jbody { (J.var.i = 1), J.var.j, (J.var.k = new JArray()) }.ToString(), "var i=1,j,k=new Array();");
+            Assert.AreEqual(J.var.abcd = J.or(J.use.a, J.use.b), "var abcd=a||b");
 
             Assert.AreEqual(J.@return("abcd"), @"return ""abcd""");
             Assert.AreEqual(J.@return(new { id = "d60ccc72-23e2-e311-a9b3-2c59e5355b8f" }), @"return {id:""d60ccc72-23e2-e311-a9b3-2c59e5355b8f""}");

@@ -5,7 +5,6 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using Newtonsoft.Json;
 
 namespace JS.Net
@@ -25,9 +24,9 @@ namespace JS.Net
         }
 
         #region 变量
-        public static Jvar var(string name, dynamic value = null)
+        public static dynamic var
         {
-            return new Jvar(name, value);
+            get { return new Jvar(); }
         }
         public static Jsyntax set(string name, dynamic value)
         {
@@ -154,7 +153,7 @@ namespace JS.Net
     {
         private string _value;
 
-        protected string Value
+        internal protected string Value
         {
             get
             {
@@ -204,7 +203,13 @@ namespace JS.Net
             public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
             {
                 const string methodName = "InvokeMember";
-                var parameters = new Expression[] { Expression.Constant(binder.Name), Expression.NewArrayInit(typeof(object), args.Select(arg => Expression.Convert(arg.Expression, typeof(object)))) };
+                Expression[] parameters;
+                var method = this.Value.GetType().GetMethod(binder.Name, args.Select(arg => arg.Value.GetType()).ToArray());
+                if (method != null)
+                {
+                    return binder.FallbackInvokeMember(this, args);
+                }
+                parameters = new Expression[] { Expression.Constant(binder.Name), Expression.NewArrayInit(typeof(object), args.Select(arg => Expression.Convert(arg.Expression, typeof(object)))) };
                 return BindDynamicMetaObject(methodName, parameters);
             }
 
@@ -257,19 +262,6 @@ namespace JS.Net
         }
         public virtual object InvokeMember(string name, object[] args)
         {
-            if (name == "Call")
-            {
-                if (args.Length > 1)
-                {
-                    var parameters = new object[args.Length - 1];
-                    Array.Copy(args, 1, parameters, 0, args.Length - 1);
-                    return Call(args[0].ToString(), parameters);
-                }
-                else
-                {
-                    return Call(args[0].ToString());
-                }
-            }
             var obj = Value;
             if (!string.IsNullOrEmpty(obj))
                 obj += ".";
@@ -288,7 +280,11 @@ namespace JS.Net
         {
             return new Jsyntax(string.Format("{0}[{1}]", Value, J.GetJs(indexes[0])));
         }
-        public Jsyntax Call(string name, object value = null)
+        public Jsyntax Call(string name)
+        {
+            return new Jsyntax(string.Format("{0}.{1}", this, name));
+        }
+        public Jsyntax Call(string name, object value)
         {
             var str = "";
             var args = value as IEnumerable<object>;
@@ -463,9 +459,9 @@ namespace JS.Net
         public JObject() : base("new Object()") { }
     }
 
-    public class Jconsole : Jsyntax
+    public class Jconsole
     {
-        public Jconsole() : base("console") { }
+        private const string Value = "console";
 
         /// <summary>
         /// 输出日志
@@ -536,51 +532,22 @@ namespace JS.Net
 
     public class Jvar : Jsyntax
     {
-        private Jvar _var;
-        private readonly dynamic _value;
-        public Jvar(string name, dynamic value = null)
-            : base(name)
+        public Jvar() : base("") { }
+        private Jvar(string value) : base(value) { }
+
+        public override object GetMember(string name)
         {
-            _value = value;
+            return new Jvar(name);
         }
 
-        public override object InvokeMember(string name, object[] args)
+        public override object SetMember(string name, object value)
         {
-            if (name == "var")
-            {
-                if (args.Length > 1)
-                    return var(args[0].ToString(), args[1]);
-                else
-                    return var(args[0].ToString());
-            }
-            return base.InvokeMember(name, args);
+            return new Jvar(string.Format("{0}={1}", name, value));
         }
 
-        public Jvar var(string name, dynamic value = null)
-        {
-            var var = new Jvar(name, value);
-            var._var = this;
-            return var;
-        }
-
-        private string Parse()
-        {
-            var sb = new StringBuilder();
-            if ((object)_var != null)
-            {
-                sb.Append(_var.Parse() + ",");
-            }
-            sb.Append(Value);
-            if ((object)_value != null)
-            {
-                sb.Append("=");
-                sb.Append(J.GetJs(_value));
-            }
-            return sb.ToString();
-        }
         public override string ToString()
         {
-            return string.Format("var {0}", Parse());
+            return string.Format("var {0}", Value);
         }
     }
 
@@ -619,10 +586,6 @@ namespace JS.Net
         }
         public override object InvokeMember(string name, object[] args)
         {
-            if (name == "Add")
-            {
-                Add((Jexpression)args[0]);
-            }
             return null;
         }
 
@@ -645,7 +608,7 @@ namespace JS.Net
         }
         public override string ToString()
         {
-            for (int i = 0; i < _items.Count; i++)
+            for (var i = 0; i < _items.Count; i++)
             {
                 if (_items[i] is Jelse || _items[i] is Jelse_if)
                 {
@@ -655,7 +618,22 @@ namespace JS.Net
                     }
                 }
             }
-            return string.Join(string.Empty, this.Select(t => t.ToString() + ((t is Jbody) ? "" : ";")));
+            var list = new List<string>();
+            for (var i = 0; i < _items.Count; i++)
+            {
+                var str = _items[i].ToString();
+                if (!(_items[i] is Jbody))
+                {
+                    if (i > 0 && _items[i - 1] is Jvar && _items[i] is Jvar)
+                        str = _items[i].Value;
+                    if (i + 1 < _items.Count && _items[i + 1] is Jvar)
+                        str += ",";
+                    else
+                        str += ";";
+                }
+                list.Add(str);
+            }
+            return string.Join(string.Empty, list);
         }
     }
 
