@@ -8,13 +8,24 @@ namespace Tests
     [TestClass]
     public class UnitTest1
     {
+        public class MyClass : Jsyntax
+        {
+            public MyClass() : base("") { }
+
+            public int M1(int i, Func<bool> f, string s)
+            {
+                return 1;
+            }
+        }
         [TestMethod]
         public void JExpression()
         {
             var a = J.syntax("a");
             Assert.AreEqual(a.Equals(a), ((object)a).Equals((object)a));
             Assert.AreEqual(J.use.a.GetType(), ((object)J.use.a).GetType());
-            Assert.AreEqual(J.use.a.Call("b",1), @"a.b(1)");
+            var c = new MyClass();
+            Assert.AreEqual(c.M1(1, null, ""), 1);
+            Assert.AreEqual(J.use.a.Call("b", 1), @"a.b(1)");
             Assert.AreEqual(J.use.a = "a", @"a=""a""");
             Assert.AreEqual(J.syntax("abcd"), "abcd");
             Assert.AreEqual((Jsyntax)"abcd", @"""abcd""");
@@ -57,7 +68,7 @@ namespace Tests
 
             Assert.AreEqual(J.use(J.use.a & J.use.b) != J.use.c, @"(a&b)!=c");
             var id = Guid.NewGuid();
-            var str = J.use.str=
+            var str = J.use.str =
                 J.use.str + @"<input id='" + id.ToString() + "' type='checkbox' value='" + J.use.dataItem.Call("aa")[J.use.i] +
                 "' /><label for='" + id.ToString() + "'>" + J.use.dataItem.Call("aa")[J.use.i] + "</label>";
             if ((string)str == "")

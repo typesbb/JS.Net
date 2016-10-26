@@ -199,13 +199,12 @@ namespace JS.Net
             public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
             {
                 const string methodName = "InvokeMember";
-                Expression[] parameters;
-                var method = this.Value.GetType().GetMethod(binder.Name, args.Select(arg => arg.Value.GetType()).ToArray());
+                var method = this.Value.GetType().GetMethod(binder.Name, args.Select(arg => arg.Value != null ? arg.Value.GetType() : typeof(object)).ToArray());
                 if (method != null)
                 {
                     return binder.FallbackInvokeMember(this, args);
                 }
-                parameters = new Expression[] { Expression.Constant(binder.Name), Expression.NewArrayInit(typeof(object), args.Select(arg => Expression.Convert(arg.Expression, typeof(object)))) };
+                var parameters = new Expression[] { Expression.Constant(binder.Name), Expression.NewArrayInit(typeof(object), args.Select(arg => Expression.Convert(arg.Expression, typeof(object)))) };
                 return BindDynamicMetaObject(methodName, parameters);
             }
 
