@@ -1,2 +1,2 @@
 # JS.Net
-A .net lib that you can writing javascript in c#.
+A .net lib that you can writing javascript use c#.
