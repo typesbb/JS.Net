@@ -144,8 +144,8 @@ namespace Tests
         [TestMethod]
         public void JPerformance()
         {
-            Stopwatch _addWatch = new Stopwatch();
-            _addWatch.Start();
+            var sw = new Stopwatch();
+            sw.Start();
 
             var a = new Jbody
             {
@@ -287,9 +287,9 @@ namespace Tests
                 {
                 },
             };
-            _addWatch.Stop();
             var str = a.ToString();
-
+            sw.Stop();
+            Console.Out.WriteLine(sw.ElapsedMilliseconds);
         }
     }
 }

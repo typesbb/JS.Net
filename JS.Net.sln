@@ -1,18 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JS.Net", "JS.Net\JS.Net.csproj", "{E78D7C07-0C6B-4FC9-B646-9DCA3869B817}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{C37D5ECB-3CDC-4593-B7F4-F88ED11B2A17}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9F96F873-1A1E-4C14-A093-784C1C79231B}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{A8067435-350A-4905-A42A-67F809EFEA63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSdotNet", "JSdotNet\JSdotNet.csproj", "{E09F8785-1149-4E28-A3D2-9BBE18272BEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,16 +13,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E78D7C07-0C6B-4FC9-B646-9DCA3869B817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E78D7C07-0C6B-4FC9-B646-9DCA3869B817}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E78D7C07-0C6B-4FC9-B646-9DCA3869B817}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E78D7C07-0C6B-4FC9-B646-9DCA3869B817}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8067435-350A-4905-A42A-67F809EFEA63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8067435-350A-4905-A42A-67F809EFEA63}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8067435-350A-4905-A42A-67F809EFEA63}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8067435-350A-4905-A42A-67F809EFEA63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C37D5ECB-3CDC-4593-B7F4-F88ED11B2A17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C37D5ECB-3CDC-4593-B7F4-F88ED11B2A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C37D5ECB-3CDC-4593-B7F4-F88ED11B2A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C37D5ECB-3CDC-4593-B7F4-F88ED11B2A17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E09F8785-1149-4E28-A3D2-9BBE18272BEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E09F8785-1149-4E28-A3D2-9BBE18272BEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E09F8785-1149-4E28-A3D2-9BBE18272BEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E09F8785-1149-4E28-A3D2-9BBE18272BEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58A4EA6B-B383-4BA0-A34F-95A17F01FFA5}
 	EndGlobalSection
 EndGlobal

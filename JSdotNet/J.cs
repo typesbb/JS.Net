@@ -5,6 +5,7 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace JS.Net
@@ -431,6 +432,14 @@ namespace JS.Net
         {
             return new Jsyntax(string.Format("{0}<<{1}", j, i));
         }
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
         #endregion
     }
 
@@ -618,7 +627,7 @@ namespace JS.Net
                     }
                 }
             }
-            var list = new List<string>();
+            var sb = new StringBuilder();
             for (var i = 0; i < _items.Count; i++)
             {
                 var str = _items[i].ToString();
@@ -631,9 +640,9 @@ namespace JS.Net
                     else
                         str += ";";
                 }
-                list.Add(str);
+                sb.Append(str);
             }
-            return string.Join(string.Empty, list);
+            return sb.ToString();
         }
     }
 

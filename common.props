@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <PackageId>JSdotNet</PackageId>
+    <Version>0.0.3.0</Version>
+    <LangVersion>latest</LangVersion>    
+    <LibTargetFramework>netstandard2.1</LibTargetFramework>
+    <Authors>typesbb</Authors>
+    <PackageProjectUrl>https://github.com/typesbb/JS.Net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/typesbb/JS.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>
