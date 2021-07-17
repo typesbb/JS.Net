@@ -61,13 +61,13 @@ namespace JS.Net
 
         #region 其他
 
-        public static Jsyntax and(Jsyntax a, Jsyntax b)
+        public static Jsyntax and(params Jsyntax[] args)
         {
-            return new Jsyntax(string.Format("{0}&&{1}", a, b));
+            return new Jsyntax(string.Join("&&", args.Select(arg => arg.ToString())));
         }
-        public static Jsyntax or(Jsyntax a, Jsyntax b)
+        public static Jsyntax or(params Jsyntax[] args)
         {
-            return new Jsyntax(string.Format("{0}||{1}", a, b));
+            return new Jsyntax(string.Join("||", args.Select(arg => arg.ToString())));
         }
         public static Jsyntax @break
         {
