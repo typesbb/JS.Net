@@ -102,6 +102,11 @@ namespace Tests
             Assert.AreEqual(new Jbody { J.debugger, (J.var.i = 1), (J.var.j = false), (J.var.k = new JArray()) }.ToString(), "debugger;var i=1,j=false,k=new Array();");
             Assert.AreEqual(J.var.abcd = J.or(J.use.a, J.use.b), "var abcd=a||b");
 
+            Assert.AreEqual(new Jbody { new Jfor(J.var.i = 0, J.use.i < 10, J.use.i++) { } }.ToString(), "for(var i=0;i<10;i++){}");
+            Assert.AreEqual(new Jbody { new Jfor(J.var.i = 0, J.use.i < 10, ++J.use.i) { } }.ToString(), "for(var i=0;i<10;++i){}");
+            Assert.AreEqual(J.@return(J.use.i++).ToString(), "return i++");
+            Assert.AreEqual(J.@return(++J.use.i).ToString(), "return ++i");
+
             Assert.AreEqual(J.@return("abcd"), @"return ""abcd""");
             Assert.AreEqual(J.@return(new { id = "d60ccc72-23e2-e311-a9b3-2c59e5355b8f" }), @"return {id:""d60ccc72-23e2-e311-a9b3-2c59e5355b8f""}");
             Assert.AreEqual(J.@return(new Jfunction(J.use.e) { J.console.log("test%d", 2) }), @"return function(e){console.log(""test%d"",2);}");
