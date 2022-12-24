@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <PackageId>JSdotNet</PackageId>
-    <Version>0.0.3.1</Version>
+    <Version>1.0.0.0</Version>
     <LangVersion>latest</LangVersion>
     <LibTargetFramework>netstandard2.1</LibTargetFramework>
     <Authors>typesbb</Authors>
