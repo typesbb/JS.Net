@@ -24,14 +24,23 @@ namespace JS.Net
             return new Jsyntax(obj);
         }
 
+        public static dynamic use
+        {
+            get { return syntax(null); }
+        }
+        public static dynamic useIf(bool condition,dynamic Jsyntax)
+        {
+            if (condition)
+            {
+                return Jsyntax;
+            }
+            return syntax(null);
+        }
+
         #region 变量
         public static dynamic var
         {
             get { return new Jvar(); }
-        }
-        public static dynamic use
-        {
-            get { return syntax(null); }
         }
         public static Jreturn @return(object value = null)
         {
@@ -637,7 +646,7 @@ namespace JS.Net
                         str = _items[i].Value;
                     if (_items[i] is Jvar && i + 1 < _items.Count && _items[i + 1] is Jvar)
                         str += ",";
-                    else
+                    else if(!string.IsNullOrWhiteSpace(str))
                         str += ";";
                 }
                 sb.Append(str);

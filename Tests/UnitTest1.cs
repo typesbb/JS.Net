@@ -32,6 +32,8 @@ namespace Tests
             Assert.AreEqual((Jsyntax)3, @"3");
             Assert.AreEqual((Jsyntax)false, @"false");
             Assert.AreEqual(J.use.deviceLinkages["a"] = new Jfunction(J.use.ct) { }, @"deviceLinkages[""a""]=function(ct){}");
+            Assert.AreEqual(J.useIf(true,J.use.a="a"), @"a=""a""");
+            Assert.AreEqual(J.useIf(false, J.use.a = "a"), "");
 
             Assert.AreEqual(J.syntax(new { name = "abcd", age = 20 }), @"{name:""abcd"",age:20}");
 
